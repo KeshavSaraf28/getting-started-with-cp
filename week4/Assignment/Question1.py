@@ -51,10 +51,11 @@ for _ in range(t):
     ans = DSU(n)
     for i in range(n):
         ans.unions(A[i], B[i])
-    unique = []
+    unique = set()
     for i in range(n):
-        if ans.findset(i+1) not in unique and ans.setsize[ans.findset(i+1)] > 1:
-            unique.append(ans.findset(i+1))
-
-    # Output the result modulo 10^9+7
+        if ans.setsize[ans.findset(i+1)] > 1:
+            unique.add(ans.findset(i+1))
+    for i in range(n):
+        if X[i] != 0:
+            unique.discard(ans.findset(X[i]))
     print((2**len(unique)) % MOD)
