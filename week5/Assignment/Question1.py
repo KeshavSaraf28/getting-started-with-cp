@@ -3,39 +3,42 @@ sys.stdin = open("input.txt", 'r')
 sys.stdout = open("output.txt", 'w')
 
 
-def dfs_until_value(matrix, start_idx, target_value):
-    stack = [start_idx]
+def bfs_shortest_path_length(matrix, n):
+    queue = [0]
     visited = set()
-    current_value = matrix[start_idx[0]][start_idx[1]]
-
-    while stack:
-        curr_idx = stack.pop()
-        i, j = curr_idx
-        matrix[i][j] = target_value
-        # if matrix[i][j] != target_value:
-        #     return matrix
-        visited.add(curr_idx)
-        # Check the four adjacent cells (up, down, left, right)
-        for x, y in [(i-1, j), (i+1, j), (i, j-1), (i, j+1)]:
-            if 0 <= x < len(matrix) and 0 <= y < len(matrix[0]) and (x, y) not in visited and matrix[x][y] == current_value:
-                stack.append((x, y))
-
-    # If we get here, we didn't find the target value
-    return matrix
+    path_length = -1
+    visited.add(0)
+    while queue:
+        path_length += 1
+        for j in range(len(queue)):
+            cur = queue.pop(0)
+            # print("current and path: ", cur, path_length)
+            if cur == n-1:
+                return path_length
+            for i in range(n):
+                if matrix[cur][i] == 1 and i not in visited:
+                    queue.append(i)
+                    visited.add(i)
+    return -1
 
 
-if __name__ == '__main__':
-
-    t = int(input())
-    while t > 0:
-        t -= 1
-        n, m = map(int, input().split())
-        matrix = []
-        for i in range(n):
-            matrix.append(list(map(int, input().strip().split())))
-        start_idx = list(map(int, input().strip().split()))
-        target_value = start_idx[2]
-        start_idx.pop(-1)
-        result = dfs_until_value(matrix, tuple(start_idx), target_value)
-        for i in result:
-            print(*i)
+n, m = map(int, input().split())
+matrix = [[0 for i in range(n)] for j in range(n)]
+for i in range(m):
+    x, y = map(int, input().split())
+    matrix[x-1][y-1] = 1
+    matrix[y-1][x-1] = 1
+# for i in matrix:
+#     print(*i)
+if matrix[n-1][0] == 0:
+    print(bfs_shortest_path_length(matrix, n))
+else:
+    for i in range(n):
+        for j in range(n):
+            if matrix[i][j] == 0 and i != j:
+                matrix[i][j] = 1
+            else:
+                matrix[i][j] = 0
+    # for i in matrix:
+    #     print(*i)
+    print(bfs_shortest_path_length(matrix, n))

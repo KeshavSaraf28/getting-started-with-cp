@@ -121,7 +121,13 @@ int main()
                 unique.erase(ans.findset(X[i]));
             }
         }
-        cout << (ll)(pow(2, unique.size())) % MOD << "\n";
+        // cout << (ll)(pow(2, unique.size())) % MOD << "\n";
+        ll answer=1;
+        for(ll i = 0; i < unique.size(); i++)
+        {
+            answer = (answer * 2) % MOD;
+        }
+        cout << answer << "\n";
     }
 
     return 0;

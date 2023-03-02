@@ -1,85 +1,77 @@
-#include <bits/stdc++.h>
+#include <iostream>
+#include <vector>
+#include <set>
 using namespace std;
 
-int bfs_shortest_path_length(int n, vector<vector<int>> &matrix)
+vector<vector<int>> dfs_until_value(vector<vector<int>> &matrix, pair<int, int> start_idx, int target_value)
 {
-    queue<int> q;
-    unordered_set<int> visited;
-    int path_length = -1;
-    q.push(0);
-    visited.insert(0);
-    while (!q.empty())
+    vector<pair<int, int>> stack;
+    set<pair<int, int>> visited;
+    int current_value = matrix[start_idx.first][start_idx.second];
+
+    stack.push_back(start_idx);
+
+    while (!stack.empty())
     {
-        path_length += 1;
-        int size = q.size();
-        for (int j = 0; j < size; j++)
+        auto curr_idx = stack.back();
+        stack.pop_back();
+        int i = curr_idx.first;
+        int j = curr_idx.second;
+        matrix[i][j] = target_value;
+        visited.insert(curr_idx);
+
+        for (auto pairs : vector<pair<int, int>>{{i - 1, j}, {i, j - 1}, {i, j + 1}, {i + 1, j}})
         {
-            int cur = q.front();
-            q.pop();
-            if (cur == n - 1)
+            if (pairs.first >= 0 && pairs.first < matrix.size() && pairs.second >= 0 && pairs.second < matrix[0].size() && visited.find({pairs.first, pairs.second}) == visited.end() && matrix[pairs.first][pairs.second] == current_value)
             {
-                return path_length;
-            }
-            for (int i = 0; i < n; i++)
-            {
-                if (matrix[cur][i] == 1 && visited.find(i) == visited.end())
-                {
-                    q.push(i);
-                    visited.insert(i);
-                }
+                stack.push_back({pairs.first, pairs.second});
             }
         }
     }
-    return -1;
+
+    return matrix;
 }
 
 int main()
 {
-    ios_base::sync_with_stdio(false);
-    cin.tie(NULL);
     // #ifndef ONLINE_JUDGE
     //     freopen("input.txt", "r", stdin);
     //     freopen("output.txt", "w", stdout);
     // #endif
-    int n, m;
-    cin >> n >> m;
-    vector<vector<int>> matrix(n, vector<int>(n));
-    for (int i = 0; i < n; i++)
+    int t;
+    cin >> t;
+
+    while (t--)
     {
-        for (int j = 0; j < n; j++)
-        {
-            matrix[i][j] = 0;
-        }
-    }
-    for (int i = 0; i < m; i++)
-    {
-        int x, y;
-        cin >> x >> y;
-        matrix[x - 1][y - 1] = 1;
-        matrix[y - 1][x - 1] = 1;
-    }
-    if (matrix[0][n - 1] == 0)
-    {
-        cout << bfs_shortest_path_length(n, matrix) << endl;
-    }
-    else
-    {
+        int n, m;
+        cin >> n >> m;
+
+        vector<vector<int>> matrix(n, vector<int>(m));
         for (int i = 0; i < n; i++)
         {
-            for (int j = 0; j < n; j++)
+            for (int j = 0; j < m; j++)
             {
-                if (matrix[i][j] == 0 && i != j)
-                {
-                    matrix[i][j] = 1;
-                }
-                else
-                {
-                    matrix[i][j] = 0;
-                }
+                cin >> matrix[i][j];
             }
         }
 
-        cout << bfs_shortest_path_length(n, matrix) << endl;
+        int i, j, target_value;
+        cin >> i >> j >> target_value;
+
+        auto result = dfs_until_value(matrix, {i, j}, target_value);
+
+        for (int i = 0; i < n; i++)
+        {
+            for (int j = 0; j < m; j++)
+            {
+                if (j == m - 1)
+                    cout << result[i][j];
+                else
+                    cout << result[i][j] << " ";
+            }
+            cout << endl;
+        }
     }
+
     return 0;
 }
